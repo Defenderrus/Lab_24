@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent):
         "   color: white;"
         "   border-color: #39af58;"
         "}"
-        "QLineEdit, QTextEdit, QComboBox, QSpinBox {"
+        "QLineEdit, QTextEdit, QComboBox, QDoubleSpinBox {"
         "   padding: 4px 6px;"
         "   border: 1px solid #e2e8f0;"
         "   border-radius: 6px;"
@@ -118,7 +118,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::onAddClicked() {
     bool ok;
-    int value = QInputDialog::getInt(this, "Добавить элемент", "Введите элемент:", 0, -1000, 1000, 1, &ok);
+    double value = QInputDialog::getDouble(this, "Добавить элемент", "Введите элемент:", 0.0, -1e9, 1e9, 2, &ok);
     if (!ok) return;
     try {
         tree.Add(value);
@@ -131,7 +131,7 @@ void MainWindow::onAddClicked() {
 
 void MainWindow::onRemoveClicked() {
     bool ok;
-    int value = QInputDialog::getInt(this, "Удалить элемент", "Введите элемент:", 0, -1000, 1000, 1, &ok);
+    double value = QInputDialog::getDouble(this, "Удалить элемент", "Введите элемент:", 0.0, -1e9, 1e9, 2, &ok);
     if (!ok) return;
     try {
         tree.Remove(value);
@@ -143,14 +143,14 @@ void MainWindow::onRemoveClicked() {
 }
 
 void MainWindow::onClearClicked() {
-    tree = BinaryTree<int>();
+    tree = BinaryTree<double>();
     drawTree();
     ui->statusbar->showMessage("Бинарное дерево очищено", 3000);
 }
 
 void MainWindow::onFindClicked() {
     bool ok;
-    int value = QInputDialog::getInt(this, "Найти элемент", "Введите элемент:", 0, -1000, 1000, 1, &ok);
+    double value = QInputDialog::getDouble(this, "Найти элемент", "Введите элемент:", 0.0, -1e9, 1e9, 2, &ok);
     if (!ok) return;
     bool found = tree.FindElement(value);
     QMessageBox::information(this, "Результат поиска",
@@ -168,7 +168,7 @@ void MainWindow::onTraverseClicked() {
     QMessageBox::information(this, "Обход", QString("%1 обход: %2").arg(type).arg(result));
 }
 
-void MainWindow::drawNode(QGraphicsScene *scene, Node<int>* node, int x, int y, int hGap) {
+void MainWindow::drawNode(QGraphicsScene *scene, Node<double>* node, int x, int y, int hGap) {
     if (!node) return;
     scene->addEllipse(x-15, y-15, 30, 30, QPen(Qt::black), QBrush(QColor("#39af58")));
     QGraphicsTextItem *text = scene->addText(QString::number(node->data));

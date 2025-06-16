@@ -27,10 +27,10 @@ private slots:
     void onTraverseClicked();
 private:
     Ui::MainWindow *ui;
-    BinaryTree<int> tree;
+    BinaryTree<double> tree;
     QGraphicsScene *scene;
 
-    void drawNode(QGraphicsScene *scene, Node<int>* node, int x, int y, int hGap);
+    void drawNode(QGraphicsScene *scene, Node<double>* node, int x, int y, int hGap);
     void drawTree();
 };
 
