@@ -11,7 +11,7 @@ void setUp(void) {}
 
 void tearDown(void) {}
 
-// Добавление-удаление-поиск элементов, балансировка и прошивка
+// Р”РѕР±Р°РІР»РµРЅРёРµ-СѓРґР°Р»РµРЅРёРµ-РїРѕРёСЃРє СЌР»РµРјРµРЅС‚РѕРІ, Р±Р°Р»Р°РЅСЃРёСЂРѕРІРєР° Рё РїСЂРѕС€РёРІРєР°
 void test_base(void) {
     BinaryTree<int> tree;
     Sequence<int> *sequence;
@@ -22,29 +22,29 @@ void test_base(void) {
     TEST_ASSERT_TRUE(tree.FindElement(5));
     TEST_ASSERT_TRUE(tree.FindElement(15));
     try {tree.Add(10);}
-    catch (const exception &e) {TEST_MESSAGE(e.what());}
+    catch (const exception &e) {cout << e.what() << endl;}
 
-    sequence = tree.Traversal("ЛКП");
+    sequence = tree.Traversal("Р›РљРџ");
     TEST_ASSERT_EQUAL(3, sequence->GetLength());
     TEST_ASSERT_EQUAL(5, sequence->GetFirst());
     TEST_ASSERT_EQUAL(10, sequence->Get(1));
     TEST_ASSERT_EQUAL(15, sequence->GetLast());
-    try {sequence = tree.Traversal("Абракадабра");}
-    catch (const exception &e) {TEST_MESSAGE(e.what());}
+    try {sequence = tree.Traversal("РђР±СЂР°РєР°РґР°Р±СЂР°");}
+    catch (const exception &e) {cout << e.what() << endl;}
     delete sequence;
 
     tree.Remove(10);
-    sequence = tree.Traversal("КЛП");
+    sequence = tree.Traversal("РљР›Рџ");
     TEST_ASSERT_FALSE(tree.FindElement(10));
     TEST_ASSERT_EQUAL(2, sequence->GetLength());
     TEST_ASSERT_EQUAL(15, sequence->GetFirst());
     TEST_ASSERT_EQUAL(5, sequence->GetLast());
     try {tree.Remove(1);}
-    catch (const exception &e) {TEST_MESSAGE(e.what());}
+    catch (const exception &e) {cout << e.what() << endl;}
     delete sequence;
 }
 
-// Поиск и извлечение поддерева
+// РџРѕРёСЃРє Рё РёР·РІР»РµС‡РµРЅРёРµ РїРѕРґРґРµСЂРµРІР°
 void test_subtree(void) {
     BinaryTree<int> tree;
     tree.Add(5);
@@ -54,7 +54,7 @@ void test_subtree(void) {
     tree.Add(17);
 
     BinaryTree<int> subtree = tree.GetSubTree(15);
-    Sequence<int> *sequence = subtree.Traversal("ЛКП");
+    Sequence<int> *sequence = subtree.Traversal("Р›РљРџ");
     TEST_ASSERT_EQUAL(3, sequence->GetLength());
     TEST_ASSERT_TRUE(subtree.FindElement(12));
     TEST_ASSERT_TRUE(subtree.FindElement(15));
@@ -65,10 +65,10 @@ void test_subtree(void) {
     subtree.Remove(12);
     TEST_ASSERT_FALSE(tree.FindSubTree(subtree));
     try {subtree = tree.GetSubTree(1);}
-    catch (const exception &e) {TEST_MESSAGE(e.what());}
+    catch (const exception &e) {cout << e.what() << endl;}
 }
 
-// Слияние деревьев
+// РЎР»РёСЏРЅРёРµ РґРµСЂРµРІСЊРµРІ
 void test_concat(void) {
     BinaryTree<int> tree1, tree2;
     Sequence<int> *sequence;
@@ -80,7 +80,7 @@ void test_concat(void) {
     tree2.Add(17);
 
     tree1.Concat(tree2);
-    sequence = tree1.Traversal("ЛКП");
+    sequence = tree1.Traversal("Р›РљРџ");
     TEST_ASSERT_EQUAL(5, sequence->GetLength());
     TEST_ASSERT_EQUAL(5, sequence->GetFirst());
     TEST_ASSERT_EQUAL(10, sequence->Get(1));
@@ -98,14 +98,14 @@ void test_map_reduce_where(void) {
     tree.Add(15);
 
     auto map = tree.Map<int>([](int x){return x + 1;});
-    sequence = map.Traversal("ЛКП");
+    sequence = map.Traversal("Р›РљРџ");
     TEST_ASSERT_EQUAL(6, sequence->GetFirst());
     TEST_ASSERT_EQUAL(11, sequence->Get(1));
     TEST_ASSERT_EQUAL(16, sequence->GetLast());
     delete sequence;
 
     auto where = tree.Where([](int x){return x % 2 == 1;});
-    sequence = where.Traversal("ЛКП");
+    sequence = where.Traversal("Р›РљРџ");
     TEST_ASSERT_EQUAL(2, sequence->GetLength());
     TEST_ASSERT_EQUAL(5, sequence->GetFirst());
     TEST_ASSERT_EQUAL(15, sequence->GetLast());

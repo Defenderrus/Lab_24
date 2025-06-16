@@ -28,10 +28,10 @@ class BinaryTree {
         friend class Node<T>;
         Node<T> *root;
 
-        // Функции для конструкторов
+        // Р¤СѓРЅРєС†РёРё РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ
         void Clear(Node<T> *node);
 
-        // Функции для обхода
+        // Р¤СѓРЅРєС†РёРё РґР»СЏ РѕР±С…РѕРґР°
         void RootLeftRight(Node<T> *node, Sequence<T> *sequence);
         void RootRightLeft(Node<T> *node, Sequence<T> *sequence);
         void LeftRightRoot(Node<T> *node, Sequence<T> *sequence);
@@ -39,7 +39,7 @@ class BinaryTree {
         void RightLeftRoot(Node<T> *node, Sequence<T> *sequence);
         void RightRootLeft(Node<T> *node, Sequence<T> *sequence);
 
-        // Функции для операций
+        // Р¤СѓРЅРєС†РёРё РґР»СЏ РѕРїРµСЂР°С†РёР№
         Node<T>* Add(Node<T> *node, T value);
         Node<T>* Remove(Node<T> *node, T value);
         Node<T>* Min(Node<T> *node);
@@ -48,7 +48,7 @@ class BinaryTree {
         bool Equivalent(Node<T> *tree_1, Node<T> *tree_2);
         Node<T>* GetSubTree(Node<T> *node);
 
-        // Функции для балансировки
+        // Р¤СѓРЅРєС†РёРё РґР»СЏ Р±Р°Р»Р°РЅСЃРёСЂРѕРІРєРё
         int GetHeight(Node<T> *node);
         int GetBalance(Node<T> *node);
         void SetHeight(Node<T> *node);
@@ -56,7 +56,7 @@ class BinaryTree {
         Node<T>* RotateRight(Node<T> *node);
         Node<T>* Balance(Node<T> *node);
 
-        // Функции для работы со строками
+        // Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё
         string SaveString1(Node<T> *node);
         string SaveString2(Node<T> *node);
         string SaveString3(Node<T> *node);
@@ -71,20 +71,21 @@ class BinaryTree {
         Node<T>* ReadString5(string format, int index);
         Node<T>* ReadString6(string format, int index);
     public:
-        // Конструкторы
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
         BinaryTree();
         ~BinaryTree();
 
-        // Обход
+        // РћР±С…РѕРґ
         Sequence<T>* Traversal(string type);
 
-        // Операции
+        // РћРїРµСЂР°С†РёРё
         void Add(T value);
         void Remove(T value);
         bool FindElement(T value);
         bool FindSubTree(BinaryTree<T> &subtree);
         BinaryTree<T> GetSubTree(T value);
         BinaryTree<T>* Concat(BinaryTree<T> &other);
+        Node<T>* GetRoot();
 
         // Map-Where-Reduce
         template<typename U>
@@ -92,12 +93,12 @@ class BinaryTree {
         BinaryTree<T> Where(function<bool(T)> func);
         T Reduce(function<T(T,T)> func, T start);
 
-        // Работа со строками
+        // Р Р°Р±РѕС‚Р° СЃРѕ СЃС‚СЂРѕРєР°РјРё
         string SaveString(string format);
         void ReadString(string format, string line);
 };
 
-// Функции для конструкторов
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ
 template <typename T>
 void BinaryTree<T>::Clear(Node<T> *node) {
     if (node) {
@@ -107,7 +108,7 @@ void BinaryTree<T>::Clear(Node<T> *node) {
     }
 }
 
-// Функции для обхода
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РѕР±С…РѕРґР°
 template <typename T>
 void BinaryTree<T>::RootLeftRight(Node<T> *node, Sequence<T> *sequence) {
     if (node) {
@@ -162,19 +163,19 @@ void BinaryTree<T>::RightRootLeft(Node<T> *node, Sequence<T> *sequence) {
     }
 }
 
-// Функции для операций
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РѕРїРµСЂР°С†РёР№
 template <typename T>
 Node<T>* BinaryTree<T>::Add(Node<T> *node, T value) {
     if (!node) return new Node<T>(value);
     else if (value < node->data) node->left = Add(node->left, value);
     else if (value > node->data) node->right = Add(node->right, value);
-    else throw invalid_argument("There is already such an element ("+to_string(value)+")!");
+    else throw invalid_argument("РўР°РєРѕР№ СЌР»РµРјРµРЅС‚ СѓР¶Рµ РµСЃС‚СЊ ("+to_string(value)+")!");
     return Balance(node);
 }
 
 template <typename T>
 Node<T>* BinaryTree<T>::Remove(Node<T> *node, T value) {
-    if (!node) throw out_of_range("There is no such element ("+to_string(value)+")!");
+    if (!node) throw out_of_range("РўР°РєРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅРµС‚ ("+to_string(value)+")!");
     else if (value < node->data) node->left = Remove(node->left, value);
     else if (value > node->data) node->right = Remove(node->right, value);
     else {
@@ -232,7 +233,7 @@ Node<T>* BinaryTree<T>::GetSubTree(Node<T> *node) {
     return nullptr;
 }
 
-// Функции для балансировки
+// Р¤СѓРЅРєС†РёРё РґР»СЏ Р±Р°Р»Р°РЅСЃРёСЂРѕРІРєРё
 template <typename T>
 int BinaryTree<T>::GetHeight(Node<T> *node) {
     if (node) return node->height;
@@ -291,7 +292,7 @@ Node<T>* BinaryTree<T>::Balance(Node<T> *node) {
     return node;
 }
 
-// Функции для работы со строками
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё
 template <typename T>
 string BinaryTree<T>::SaveString1(Node<T> *node) {
     if (node) {
@@ -358,7 +359,7 @@ string BinaryTree<T>::SaveString6(Node<T> *node) {
     return "null ";
 }
 
-// Конструкторы
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 template <typename T>
 BinaryTree<T>::BinaryTree() : root(nullptr) {}
 
@@ -367,21 +368,21 @@ BinaryTree<T>::~BinaryTree() {
     Clear(root);
 }
 
-// Обход
+// РћР±С…РѕРґ
 template <typename T>
 Sequence<T>* BinaryTree<T>::Traversal(string type) {
     Sequence<T> *sequence = new ArraySequence<T>();
-    if (type == "КЛП") RootLeftRight(root, sequence);
-    else if (type == "КПЛ") RootRightLeft(root, sequence);
-    else if (type == "ЛПК") LeftRightRoot(root, sequence);
-    else if (type == "ЛКП") LeftRootRight(root, sequence);
-    else if (type == "ПЛК") RightLeftRoot(root, sequence);
-    else if (type == "ПКЛ") RightRootLeft(root, sequence);
-    else throw invalid_argument("Unknown tree traversal!");
+    if (type == "РљР›Рџ") RootLeftRight(root, sequence);
+    else if (type == "РљРџР›") RootRightLeft(root, sequence);
+    else if (type == "Р›РџРљ") LeftRightRoot(root, sequence);
+    else if (type == "Р›РљРџ") LeftRootRight(root, sequence);
+    else if (type == "РџР›Рљ") RightLeftRoot(root, sequence);
+    else if (type == "РџРљР›") RightRootLeft(root, sequence);
+    else throw invalid_argument("РќРµРёР·РІРµСЃС‚РЅС‹Р№ РѕР±С…РѕРґ ("+type+")!");
     return sequence;
 }
 
-// Операции
+// РћРїРµСЂР°С†РёРё
 template <typename T>
 void BinaryTree<T>::Add(T value) {
     root = Add(root, value);
@@ -408,17 +409,22 @@ BinaryTree<T> BinaryTree<T>::GetSubTree(T value) {
     BinaryTree<T> subTree;
     Node<T> *subRoot = FindElement(root, value);
     if (subRoot) subTree.root = GetSubTree(subRoot);
-    else throw invalid_argument("There is no such element ("+to_string(value)+")!");
+    else throw invalid_argument("РўР°РєРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅРµС‚ ("+to_string(value)+")!");
     return subTree;
 }
 
 template <typename T>
 BinaryTree<T>* BinaryTree<T>::Concat(BinaryTree<T> &other) {
-    Sequence<T> *sequence = other.Traversal("КЛП");
+    Sequence<T> *sequence = other.Traversal("РљР›Рџ");
     for (int i = 0; i < sequence->GetLength(); i++) {
         if (!FindElement(sequence->Get(i))) Add(sequence->Get(i));
     }
     return this;
+}
+
+template <typename T>
+Node<T>* BinaryTree<T>::GetRoot() {
+    return root;
 }
 
 // Map-Where-Reduce
@@ -426,7 +432,7 @@ template <typename T>
 template <typename U>
 BinaryTree<U> BinaryTree<T>::Map(function<U(T)> func) {
     BinaryTree<U> newTree;
-    Sequence<T> *sequence = Traversal("КЛП");
+    Sequence<T> *sequence = Traversal("РљР›Рџ");
     for (int i = 0; i < sequence->GetLength(); i++) {
         newTree.Add(func(sequence->Get(i)));
     }
@@ -436,7 +442,7 @@ BinaryTree<U> BinaryTree<T>::Map(function<U(T)> func) {
 template <typename T>
 BinaryTree<T> BinaryTree<T>::Where(function<bool(T)> func) {
     BinaryTree<T> newTree;
-    Sequence<T> *sequence = Traversal("КЛП");
+    Sequence<T> *sequence = Traversal("РљР›Рџ");
     for (int i = 0; i < sequence->GetLength(); i++) {
         if (func(sequence->Get(i))) newTree.Add(sequence->Get(i));
     }
@@ -445,45 +451,45 @@ BinaryTree<T> BinaryTree<T>::Where(function<bool(T)> func) {
 
 template <typename T>
 T BinaryTree<T>::Reduce(function<T(T, T)> func, T start) {
-    Sequence<T> *sequence = Traversal("КЛП");
+    Sequence<T> *sequence = Traversal("РљР›Рџ");
     for (int i = 0; i < sequence->GetLength(); i++) {
         start = func(start, sequence->Get(i));
     }
     return start;
 }
 
-// Работа со строками
+// Р Р°Р±РѕС‚Р° СЃРѕ СЃС‚СЂРѕРєР°РјРё
 template <typename T>
 string BinaryTree<T>::SaveString(string format) {
-    if (format.size() > 9) throw invalid_argument("Incorrect format!");
+    if (format.size() > 9) throw invalid_argument("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚!");
     string type;
     int i, flag = 0;
     char s;
     for (i = 0; i < format.size(); i++) {
         s = format[i];
-        if (s == 'К' || s == 'Л' || s == 'П') type += s;
+        if (s == L'Рљ' || s == L'Р›' || s == L'Рџ') type += s;
         else if (s != '{' && s != '[' && s != '(' &&
-                 s != '}' && s != ']' && s != ')' || flag < 0) throw invalid_argument("Incorrect format!");
+                 s != '}' && s != ']' && s != ')' || flag < 0) throw invalid_argument("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚!");
         else if (s == '{' || s == '[' || s == '(') flag++;
         else if (s == '}' || s == ']' || s == ')') flag--;
     }
-    if (flag || type.size() != 3) throw invalid_argument("Incorrect format!");
+    if (flag || type.size() != 3) throw invalid_argument("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚!");
 
     string result, temp;
     for (i = 0; i < format.size(); i++) {
         s = format[i];
         if (s == '{' || s == '[' || s == '(' || s == '}' || s == ']' || s == ')') result += s;
-        else if (s == 'К') result += root ? " "+to_string(root->data)+" " : " null ";
-        else if (s == 'Л' || s =='П') {
+        else if (s == L'Рљ') result += root ? " "+to_string(root->data)+" " : " null ";
+        else if (s == L'Р›' || s == L'Рџ') {
             if (root) {
-                Node<T> *node = s == 'Л' ? root->left : root->right;
-                if (type == "КЛП") temp = SaveString1(node);
-                else if (type == "КПЛ") temp = SaveString2(node);
-                else if (type == "ЛПК") temp = SaveString3(node);
-                else if (type == "ЛКП") temp = SaveString4(node);
-                else if (type == "ПЛК") temp = SaveString5(node);
-                else if (type == "ПКЛ") temp = SaveString6(node);
-                else throw invalid_argument("Incorrect format!");
+                Node<T> *node = s == L'Р›' ? root->left : root->right;
+                if (type == "РљР›Рџ") temp = SaveString1(node);
+                else if (type == "РљРџР›") temp = SaveString2(node);
+                else if (type == "Р›РџРљ") temp = SaveString3(node);
+                else if (type == "Р›РљРџ") temp = SaveString4(node);
+                else if (type == "РџР›Рљ") temp = SaveString5(node);
+                else if (type == "РџРљР›") temp = SaveString6(node);
+                else throw invalid_argument("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚!");
                 result += " "+temp;
             } else result += " null ";
         }
@@ -493,17 +499,17 @@ string BinaryTree<T>::SaveString(string format) {
 
 template <typename T>
 void BinaryTree<T>::ReadString(string format, string line) {
-    // if (format.size() > 9) throw "Неправильный формат заданной строки!";
+    // if (format.size() > 9) throw "РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ Р·Р°РґР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё!";
     // string type;
     // int flag = 0;
     // for (const char &s : format) {
-    //     if (s == "К" || s == "Л" || s == "П") type += s;
+    //     if (s == "Рљ" || s == "Р›" || s == "Рџ") type += s;
     //     else if (s != "{" && s != "[" && s != "(" &&
-    //              s != "}" && s != "]" && s != ")" || flag < 0) throw "Неправильный формат заданной строки!";
+    //              s != "}" && s != "]" && s != ")" || flag < 0) throw "РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ Р·Р°РґР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё!";
     //     else if (s == "{" || s == "[" || s == "(") flag++;
     //     else if (s == "}" || s == "]" || s == ")") flag--;
     // }
-    // if (flag || type.size() != 3) throw "Неправильный формат заданной строки!";
+    // if (flag || type.size() != 3) throw "РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ Р·Р°РґР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё!";
 
     // Clear(root);
     // root = nullptr;
@@ -514,7 +520,7 @@ void BinaryTree<T>::ReadString(string format, string line) {
     //     tokens->Append(token);
     // }
     // for (const char &s : format) {
-    //     if (s == "К") {
+    //     if (s == "Рљ") {
     //         root = new Node<T>();
     //     }
     // }
