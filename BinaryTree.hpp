@@ -2,6 +2,8 @@
 #define BINARYTREE_HPP
 
 #include <functional>
+#include <sstream>
+#include <iostream>
 #include "sequences/ArraySequence.hpp"
 #include "sequences/ListSequence.hpp"
 using namespace std;
@@ -56,27 +58,22 @@ class BinaryTree {
         Node<T>* RotateRight(Node<T> *node);
         Node<T>* Balance(Node<T> *node);
 
-        // Функции для работы со строками
-        string SaveString1(Node<T> *node);
-        string SaveString2(Node<T> *node);
-        string SaveString3(Node<T> *node);
-        string SaveString4(Node<T> *node);
-        string SaveString5(Node<T> *node);
-        string SaveString6(Node<T> *node);
-
-        Node<T>* ReadString1(string format, int index);
-        Node<T>* ReadString2(string format, int index);
-        Node<T>* ReadString3(string format, int index);
-        Node<T>* ReadString4(string format, int index);
-        Node<T>* ReadString5(string format, int index);
-        Node<T>* ReadString6(string format, int index);
+        // Работа со строками
+        string SaveString(Node<T> *node, string format, size_t index);
+        Node<T>* ReadString(string line, size_t &lineIndex, string format, size_t formatIndex);
+        void search(string line, size_t &index, string &token);
+        T parse(string token);
     public:
         // Конструкторы
         BinaryTree();
         ~BinaryTree();
+        BinaryTree(BinaryTree<T> &&other);
 
         // Обход
         Sequence<T>* Traversal(string type);
+
+        // Перегрузка операторов
+        BinaryTree<T>& operator=(BinaryTree<T> &&other);
 
         // Операции
         void Add(T value);
@@ -292,71 +289,92 @@ Node<T>* BinaryTree<T>::Balance(Node<T> *node) {
     return node;
 }
 
-// Функции для работы со строками
+// Работа со строками
 template <typename T>
-string BinaryTree<T>::SaveString1(Node<T> *node) {
-    if (node) {
-        string result = to_string(node->data) + " ";
-        result += SaveString1(node->left);
-        result += SaveString1(node->right);
-        return result;
+string BinaryTree<T>::SaveString(Node<T> *node, string format, size_t index) {
+    if (!node) return " null ";
+    string result;
+    while (index < format.size()) {
+        char s = format[index++];
+        if (s == '{' || s == '[' || s == '(' || s == '}' || s == ']' || s == ')') {
+            result += s;
+        } else if (s == 'K' || s == 'L' || s == 'P') {
+            if (s == 'K') {
+                result += node ? " "+to_string(node->data)+" " : " null ";
+            } else if (s == 'L') {
+                if (node) result += SaveString(node->left, format, 0);
+            } else if (s == 'P') {
+                if (node) result += SaveString(node->right, format, 0);
+            }
+        }
     }
-    return "null ";
+    return result;
 }
 
 template <typename T>
-string BinaryTree<T>::SaveString2(Node<T> *node) {
-    if (node) {
-        string result = to_string(node->data) + " ";
-        result += SaveString2(node->right);
-        result += SaveString2(node->left);
-        return result;
+Node<T>* BinaryTree<T>::ReadString(string line, size_t &lineIndex, string format, size_t formatIndex) {
+    Node<T> *node = nullptr;
+    string token;
+    while (lineIndex < line.size() && formatIndex < format.size()) {
+        char s = format[formatIndex++];
+        if (s == '{' || s == '[' || s == '(' || s == '}' || s == ']' || s == ')') {
+            while (lineIndex < line.size() && isspace(line[lineIndex])) lineIndex++;
+            if (lineIndex >= line.size() || s != line[lineIndex]) {
+                throw invalid_argument("Ожидалась скобка '"+string(1, s)+
+                                       "', но найдено '"+(lineIndex < line.size() ? string(1, line[lineIndex]) : "конец строки") + "'");
+            }
+            lineIndex++;
+        } else if (s == 'K' || s == 'L' || s == 'P') {
+            if (s == 'K') {
+                search(line, lineIndex, token);
+                if (token != "null") {
+                    T value;
+                    try {value = parse(token);}
+                    catch (...) {throw invalid_argument("Неверный тип значения: "+token+"!");}
+                    if (!node) node = new Node<T>(value);
+                    else node->data = value;
+                }
+                else return nullptr;
+            } else if (s == 'L') {
+                size_t checkIndex = lineIndex;
+                search(line, checkIndex, token);
+                if (!node) node = new Node<T>(parse("0"));
+                if (token == "null") {
+                    node->left = nullptr;
+                    lineIndex = checkIndex;
+                } else node->left = ReadString(line, lineIndex, format, 0);
+            } else if (s == 'P') {
+                size_t checkIndex = lineIndex;
+                search(line, checkIndex, token);
+                if (!node) node = new Node<T>(parse("0"));
+                if (token == "null") {
+                    node->right = nullptr;
+                    lineIndex = checkIndex;
+                } else node->right = ReadString(line, lineIndex, format, 0);
+            }
+        }
     }
-    return "null ";
+    return node;
 }
 
 template <typename T>
-string BinaryTree<T>::SaveString3(Node<T> *node) {
-    if (node) {
-        string result = SaveString3(node->left);
-        result += SaveString3(node->right);
-        result += to_string(node->data) + " ";
-        return result;
+void BinaryTree<T>::search(string line, size_t &index, string &token) {
+    while (index < line.size() && isspace(line[index])) index++;
+    token.clear();
+    while (index < line.size() && !isspace(line[index]) && 
+        line[index] != '{' && line[index] != '}' &&
+        line[index] != '[' && line[index] != ']' &&
+        line[index] != '(' && line[index] != ')') {
+        token += line[index++];
     }
-    return "null ";
 }
 
 template <typename T>
-string BinaryTree<T>::SaveString4(Node<T> *node) {
-    if (node) {
-        string result = SaveString4(node->left);
-        result += to_string(node->data) + " ";
-        result += SaveString4(node->right);
-        return result;
-    }
-    return "null ";
-}
-
-template <typename T>
-string BinaryTree<T>::SaveString5(Node<T> *node) {
-    if (node) {
-        string result = SaveString5(node->right);
-        result += SaveString5(node->left);
-        result += to_string(node->data) + " ";
-        return result;
-    }
-    return "null ";
-}
-
-template <typename T>
-string BinaryTree<T>::SaveString6(Node<T> *node) {
-    if (node) {
-        string result = SaveString6(node->right);
-        result += to_string(node->data) + " ";
-        result += SaveString6(node->left);
-        return result;
-    }
-    return "null ";
+T BinaryTree<T>::parse(string token) {
+    istringstream iss(token);
+    T value;
+    iss >> value;
+    return value;
 }
 
 // Конструкторы
@@ -366,6 +384,12 @@ BinaryTree<T>::BinaryTree() : root(nullptr) {}
 template <typename T>
 BinaryTree<T>::~BinaryTree() {
     Clear(root);
+}
+
+template <typename T>
+BinaryTree<T>::BinaryTree(BinaryTree<T> &&other) {
+    root = other.root;
+    other.root = nullptr;
 }
 
 // Обход
@@ -380,6 +404,17 @@ Sequence<T>* BinaryTree<T>::Traversal(string type) {
     else if (type == "ПКЛ") RightRootLeft(root, sequence);
     else throw invalid_argument("Неизвестный обход ("+type+")!");
     return sequence;
+}
+
+// Перегрузка операторов
+template <typename T>
+BinaryTree<T>& BinaryTree<T>::operator=(BinaryTree<T> &&other) {
+    if (this != &other) {
+        Clear(root);
+        root = other.root;
+        other.root = nullptr;
+    }
+    return *this;
 }
 
 // Операции
@@ -461,69 +496,56 @@ T BinaryTree<T>::Reduce(function<T(T, T)> func, T start) {
 // Работа со строками
 template <typename T>
 string BinaryTree<T>::SaveString(string format) {
-    if (format.size() > 9) throw invalid_argument("Неверный формат!");
+    if (format.size() != 7 && format.size() != 9) throw invalid_argument("Неверный формат!");
+    bool k = false, l = false, p = false;
     string type;
-    int i, flag = 0;
-    char s;
-    for (i = 0; i < format.size(); i++) {
-        s = format[i];
-        if (s == L'К' || s == L'Л' || s == L'П') type += s;
-        else if (s != '{' && s != '[' && s != '(' &&
-                 s != '}' && s != ']' && s != ')' || flag < 0) throw invalid_argument("Неверный формат!");
-        else if (s == '{' || s == '[' || s == '(') flag++;
-        else if (s == '}' || s == ']' || s == ')') flag--;
-    }
-    if (flag || type.size() != 3) throw invalid_argument("Неверный формат!");
-
-    string result, temp;
-    for (i = 0; i < format.size(); i++) {
-        s = format[i];
-        if (s == '{' || s == '[' || s == '(' || s == '}' || s == ']' || s == ')') result += s;
-        else if (s == L'К') result += root ? " "+to_string(root->data)+" " : " null ";
-        else if (s == L'Л' || s == L'П') {
-            if (root) {
-                Node<T> *node = s == L'Л' ? root->left : root->right;
-                if (type == "КЛП") temp = SaveString1(node);
-                else if (type == "КПЛ") temp = SaveString2(node);
-                else if (type == "ЛПК") temp = SaveString3(node);
-                else if (type == "ЛКП") temp = SaveString4(node);
-                else if (type == "ПЛК") temp = SaveString5(node);
-                else if (type == "ПКЛ") temp = SaveString6(node);
-                else throw invalid_argument("Неверный формат!");
-                result += " "+temp;
-            } else result += " null ";
+    int flag = 0;
+    for (char s : format) {
+        if (s == 'K' || s == 'L' || s == 'P') {
+            type += s;
+            if (s == 'K') k = true;
+            if (s == 'L') l = true;
+            if (s == 'P') p = true;
         }
+        else if (s == '{' || s == '[' || s == '(') flag++;
+        else if (s == '}' || s == ']' || s == ')') {
+            if (--flag != 0) throw invalid_argument("Несбалансированные скобки в формате!");
+        } else throw invalid_argument("Недопустимый символ в формате!");
     }
-    return result;
+    if (flag) throw invalid_argument("Несбалансированные скобки в формате!");
+    if (type.size() != 3 || !k || !l || !p) throw invalid_argument("Формат должен содержать K, L и P ровно по одному разу!");
+    return SaveString(root, format, 0);
 }
 
 template <typename T>
 void BinaryTree<T>::ReadString(string format, string line) {
-    // if (format.size() > 9) throw "Неправильный формат заданной строки!";
-    // string type;
-    // int flag = 0;
-    // for (const char &s : format) {
-    //     if (s == "К" || s == "Л" || s == "П") type += s;
-    //     else if (s != "{" && s != "[" && s != "(" &&
-    //              s != "}" && s != "]" && s != ")" || flag < 0) throw "Неправильный формат заданной строки!";
-    //     else if (s == "{" || s == "[" || s == "(") flag++;
-    //     else if (s == "}" || s == "]" || s == ")") flag--;
-    // }
-    // if (flag || type.size() != 3) throw "Неправильный формат заданной строки!";
-
-    // Clear(root);
-    // root = nullptr;
-    // istringstream stream(line);
-    // string token;
-    // Sequence<T> *tokens;
-    // while (stream >> token) {
-    //     tokens->Append(token);
-    // }
-    // for (const char &s : format) {
-    //     if (s == "К") {
-    //         root = new Node<T>();
-    //     }
-    // }
+    if (format.size() != 7 && format.size() != 9) throw invalid_argument("Неверный формат!");
+    bool k = false, l = false, p = false;
+    string type;
+    int flag = 0;
+    for (char s : format) {
+        if (s == 'K' || s == 'L' || s == 'P') {
+            type += s;
+            if (s == 'K') k = true;
+            if (s == 'L') l = true;
+            if (s == 'P') p = true;
+        }
+        else if (s == '{' || s == '[' || s == '(') flag++;
+        else if (s == '}' || s == ']' || s == ')') {
+            if (--flag != 0) throw invalid_argument("Несбалансированные скобки в формате!");
+        } else throw invalid_argument("Недопустимый символ в формате!");
+    }
+    if (flag) throw invalid_argument("Несбалансированные скобки в формате!");
+    if (type.size() != 3 || !k || !l || !p) throw invalid_argument("Формат должен содержать K, L и P ровно по одному разу!");
+    Clear(root);
+    size_t lineIndex = 0;
+    try {
+        root = ReadString(line, lineIndex, format, 0);
+    } catch (const exception& e) {
+        Clear(root);
+        root = nullptr;
+        throw;
+    }
 }
 
 #endif // BINARYTREE_HPP

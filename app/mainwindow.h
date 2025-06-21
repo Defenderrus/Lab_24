@@ -24,7 +24,10 @@ private slots:
     void onRemoveClicked();
     void onClearClicked();
     void onFindClicked();
+    void onGetClicked();
     void onTraverseClicked();
+    void onSerializeClicked();
+    void onDeserializeClicked();
 private:
     Ui::MainWindow *ui;
     BinaryTree<double> tree;

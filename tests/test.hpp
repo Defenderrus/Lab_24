@@ -115,12 +115,55 @@ void test_map_reduce_where(void) {
     TEST_ASSERT_EQUAL(30, reduce);
 }
 
+void test_string(void) {
+    BinaryTree<int> tree;
+    tree.Add(5);
+    tree.Add(10);
+    tree.Add(15);
+    string result1 = tree.SaveString("{K}(L)[P]");
+    string result2 = tree.SaveString("(L)K[P]");
+    string result3 = tree.SaveString("(L)[P]K");
+    string correct1 = "{ 10 }({ 5 }( null )[ null ])[{ 15 }( null )[ null ]]";
+    string correct2 = "(( null ) 5 [ null ]) 10 [( null ) 15 [ null ]]";
+    string correct3 = "(( null )[ null ] 5 )[( null )[ null ] 15 ] 10 ";
+    TEST_ASSERT_EQUAL_STRING(correct1.c_str(), result1.c_str());
+    TEST_ASSERT_EQUAL_STRING(correct2.c_str(), result2.c_str());
+    TEST_ASSERT_EQUAL_STRING(correct3.c_str(), result3.c_str());
+
+    BinaryTree<int> tree1;
+    BinaryTree<int> tree2;
+    BinaryTree<int> tree3;
+    tree1.ReadString("{K}(L)[P]", result1);
+    tree2.ReadString("(L)K[P]", result2);
+    tree3.ReadString("(L)[P]K", result3);
+    string result11 = tree1.SaveString("{K}(L)[P]");
+    string result22 = tree2.SaveString("(L)K[P]");
+    string result33 = tree3.SaveString("(L)[P]K");
+    TEST_ASSERT_EQUAL_STRING(correct1.c_str(), result11.c_str());
+    TEST_ASSERT_EQUAL_STRING(correct2.c_str(), result22.c_str());
+    TEST_ASSERT_EQUAL_STRING(correct3.c_str(), result33.c_str());
+
+    try {
+        BinaryTree<int> treeError;
+        string error = treeError.SaveString("(L[K)P]");
+    } catch (const exception &e) {cout << e.what() << endl;}
+    try {
+        BinaryTree<int> treeError;
+        string error = treeError.SaveString("K(L)[K]");
+    } catch (const exception &e) {cout << e.what() << endl;}
+    try {
+        BinaryTree<int> treeError;
+        string error = treeError.SaveString("K(L)[P]gg");
+    } catch (const exception &e) {cout << e.what() << endl;}
+}
+
 int run_tests(void) {
     UNITY_BEGIN();
     RUN_TEST(test_base);
     RUN_TEST(test_subtree);
     RUN_TEST(test_concat);
     RUN_TEST(test_map_reduce_where);
+    RUN_TEST(test_string);
     return UNITY_END();
 }
 

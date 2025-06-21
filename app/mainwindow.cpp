@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 using namespace std;
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
@@ -108,7 +109,10 @@ MainWindow::MainWindow(QWidget *parent):
     connect(ui->removeButton, &QPushButton::clicked, this, &MainWindow::onRemoveClicked);
     connect(ui->clearButton, &QPushButton::clicked, this, &MainWindow::onClearClicked);
     connect(ui->findButton, &QPushButton::clicked, this, &MainWindow::onFindClicked);
+    connect(ui->getButton, &QPushButton::clicked, this, &MainWindow::onGetClicked);
     connect(ui->traverseButton, &QPushButton::clicked, this, &MainWindow::onTraverseClicked);
+    connect(ui->serializeButton, &QPushButton::clicked, this, &MainWindow::onSerializeClicked);
+    connect(ui->deserializeButton, &QPushButton::clicked, this, &MainWindow::onDeserializeClicked);
     drawTree();
 }
 
@@ -158,6 +162,19 @@ void MainWindow::onFindClicked() {
                                    : QString("Элемент (%1) не найден").arg(value));
 }
 
+void MainWindow::onGetClicked() {
+    bool ok;
+    double value = QInputDialog::getDouble(this, "Извлечь поддерево", "Введите элемент:", 0.0, -1e9, 1e9, 2, &ok);
+    if (!ok) return;
+    try {
+        tree = tree.GetSubTree(value);
+        drawTree();
+        ui->statusbar->showMessage(QString("Поддерево с корнем: %1").arg(value), 3000);
+    } catch (const std::exception& e) {
+        QMessageBox::warning(this, "Ошибка", e.what());
+    }
+}
+
 void MainWindow::onTraverseClicked() {
     QString type = ui->traverseComboBox->currentText();
     auto sequence = tree.Traversal(type.toStdString());
@@ -166,6 +183,36 @@ void MainWindow::onTraverseClicked() {
         result += QString::number(sequence->Get(i)) + " ";
     }
     QMessageBox::information(this, "Обход", QString("%1 обход: %2").arg(type).arg(result));
+}
+
+void MainWindow::onSerializeClicked() {
+    bool ok;
+    QString format = QInputDialog::getText(this, "Сериализация", "Введите формат сериализации (например, {K}(L)[P]):",
+                                           QLineEdit::Normal, "{K}(L)[P]", &ok);
+    if (!ok || format.isEmpty()) return;
+    try {
+        string serialized = tree.SaveString(format.toStdString());
+        QMessageBox::information(this, "Сериализация", QString("Результат сериализации:\n%1").arg(QString::fromStdString(serialized)));
+    } catch (const std::exception& e) {
+        QMessageBox::warning(this, "Ошибка", e.what());
+    }
+}
+
+void MainWindow::onDeserializeClicked() {
+    bool ok;
+    QString format = QInputDialog::getText(this, "Десериализация", "Введите формат десериализации (например, {K}(L)[P]):",
+                                           QLineEdit::Normal, "{K}(L)[P]", &ok);
+    if (!ok || format.isEmpty()) return;
+    QString data = QInputDialog::getText(this, "Десериализация", "Введите строку для десериализации:",
+                                         QLineEdit::Normal, "", &ok);
+    if (!ok || data.isEmpty()) return;
+    try {
+        tree.ReadString(format.toStdString(), data.toStdString());
+        drawTree();
+        ui->statusbar->showMessage("Дерево успешно десериализовано", 3000);
+    } catch (const std::exception& e) {
+        QMessageBox::warning(this, "Ошибка", e.what());
+    }
 }
 
 void MainWindow::drawNode(QGraphicsScene *scene, Node<double>* node, int x, int y, int hGap) {

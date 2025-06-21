@@ -51,6 +51,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="getButton">
+           <property name="text">
+            <string>Извлечь</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="clearButton">
            <property name="text">
             <string>Очистить</string>
@@ -110,6 +117,35 @@
           <widget class="QPushButton" name="traverseButton">
            <property name="text">
             <string>Обход</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Строки</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QPushButton" name="serializeButton">
+           <property name="text">
+            <string>Сериализация</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deserializeButton">
+           <property name="text">
+            <string>Десериализация</string>
            </property>
           </widget>
          </item>
