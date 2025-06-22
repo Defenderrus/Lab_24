@@ -1,9 +1,10 @@
 #ifndef BINARYTREE_HPP
 #define BINARYTREE_HPP
 
-#include <functional>
 #include <sstream>
-#include <iostream>
+#include <functional>
+#include "ICollectionTree.hpp"
+#include "EnumeratorTree.hpp"
 #include "sequences/ArraySequence.hpp"
 #include "sequences/ListSequence.hpp"
 using namespace std;
@@ -25,7 +26,7 @@ class Node {
 };
 
 template <typename T>
-class BinaryTree {
+class BinaryTree: public ICollectionTree<T>, public IEnumerableTree<T> {
     private:
         friend class Node<T>;
         Node<T> *root;
@@ -49,6 +50,7 @@ class BinaryTree {
         bool FindSubTree(Node<T> *tree, Node<T> *subtree);
         bool Equivalent(Node<T> *tree_1, Node<T> *tree_2);
         Node<T>* GetSubTree(Node<T> *node);
+        string Rounding(double number);
 
         // Функции для балансировки
         int GetHeight(Node<T> *node);
@@ -75,10 +77,11 @@ class BinaryTree {
         // Перегрузка операторов
         BinaryTree<T>& operator=(BinaryTree<T> &&other);
 
-        // Операции
-        void Add(T value);
-        void Remove(T value);
-        bool FindElement(T value);
+        // Операции (+ ICollection)
+        size_t GetSize() override;
+        void Add(T value) override;
+        void Remove(T value) override;
+        bool FindElement(T value) override;
         bool FindSubTree(BinaryTree<T> &subtree);
         BinaryTree<T> GetSubTree(T value);
         BinaryTree<T>* Concat(BinaryTree<T> &other);
@@ -93,6 +96,57 @@ class BinaryTree {
         // Работа со строками
         string SaveString(string format);
         void ReadString(string format, string line);
+
+        // IEnumerator + IEnumerable
+        class IteratorTree: public IEnumeratorTree<T> {
+            private:
+                Node<T> *root;
+                Node<T> *current;
+                Node<T> *next;
+            public:
+                IteratorTree(Node<T> *node): root(node), current(nullptr), next(node) {
+                    while (next && next->left) next = next->left;
+                }
+                ~IteratorTree() override = default;
+                T Current() override {
+                    if (!current) {
+                        throw std::out_of_range("Итератор не был инициализирован!");
+                    }
+                    return current->data;
+                }
+                void Reset() override {
+                    current = nullptr;
+                    next = root;
+                    while (next && next->left) next = next->left;
+                }
+                bool MoveNext() override {
+                    if (!next) {
+                        current = nullptr;
+                        return false;
+                    }
+                    current = next;
+                    if (next->right) {
+                        next = next->right;
+                        while (next->left) next = next->left;
+                    } else {
+                        Node<T> *parent = nullptr;
+                        Node<T> *node = root;
+                        while (node && node != next) {
+                            if (next->data < node->data) {
+                                parent = node;
+                                node = node->left;
+                            } else {
+                                node = node->right;
+                            }
+                        }
+                        next = parent;
+                    }
+                    return true;
+                }
+        };
+        IEnumeratorTree<T>* GetEnumerator() override {
+            return new IteratorTree(root);
+        }
 };
 
 // Функции для конструкторов
@@ -166,13 +220,13 @@ Node<T>* BinaryTree<T>::Add(Node<T> *node, T value) {
     if (!node) return new Node<T>(value);
     else if (value < node->data) node->left = Add(node->left, value);
     else if (value > node->data) node->right = Add(node->right, value);
-    else throw invalid_argument("Такой элемент уже есть ("+to_string(value)+")!");
+    else throw invalid_argument("Такой элемент уже есть ("+Rounding(value)+")!");
     return Balance(node);
 }
 
 template <typename T>
 Node<T>* BinaryTree<T>::Remove(Node<T> *node, T value) {
-    if (!node) throw out_of_range("Такого элемента нет ("+to_string(value)+")!");
+    if (!node) throw out_of_range("Такого элемента нет ("+Rounding(value)+")!");
     else if (value < node->data) node->left = Remove(node->left, value);
     else if (value > node->data) node->right = Remove(node->right, value);
     else {
@@ -228,6 +282,13 @@ Node<T>* BinaryTree<T>::GetSubTree(Node<T> *node) {
         return newNode;
     }
     return nullptr;
+}
+
+template <typename T>
+string BinaryTree<T>::Rounding(double number) {
+    char buffer[20];
+    snprintf(buffer, sizeof(buffer), "%.2f", number);
+    return string(buffer);
 }
 
 // Функции для балансировки
@@ -300,7 +361,7 @@ string BinaryTree<T>::SaveString(Node<T> *node, string format, size_t index) {
             result += s;
         } else if (s == 'K' || s == 'L' || s == 'P') {
             if (s == 'K') {
-                result += node ? " "+to_string(node->data)+" " : " null ";
+                result += node ? " "+Rounding(node->data)+" " : " null ";
             } else if (s == 'L') {
                 if (node) result += SaveString(node->left, format, 0);
             } else if (s == 'P') {
@@ -417,7 +478,16 @@ BinaryTree<T>& BinaryTree<T>::operator=(BinaryTree<T> &&other) {
     return *this;
 }
 
-// Операции
+// Операции (+ ICollection)
+template <typename T>
+size_t BinaryTree<T>::GetSize() {
+    if (!root) return 0;
+    Sequence<T> *sequence = Traversal("КЛП");
+    size_t size = sequence->GetLength();
+    delete sequence;
+    return size;
+}
+
 template <typename T>
 void BinaryTree<T>::Add(T value) {
     root = Add(root, value);
@@ -444,14 +514,14 @@ BinaryTree<T> BinaryTree<T>::GetSubTree(T value) {
     BinaryTree<T> subTree;
     Node<T> *subRoot = FindElement(root, value);
     if (subRoot) subTree.root = GetSubTree(subRoot);
-    else throw invalid_argument("Такого элемента нет ("+to_string(value)+")!");
+    else throw invalid_argument("Такого элемента нет ("+Rounding(value)+")!");
     return subTree;
 }
 
 template <typename T>
 BinaryTree<T>* BinaryTree<T>::Concat(BinaryTree<T> &other) {
     Sequence<T> *sequence = other.Traversal("КЛП");
-    for (int i = 0; i < sequence->GetLength(); i++) {
+    for (size_t i = 0; i < sequence->GetLength(); i++) {
         if (!FindElement(sequence->Get(i))) Add(sequence->Get(i));
     }
     return this;
@@ -468,7 +538,7 @@ template <typename U>
 BinaryTree<U> BinaryTree<T>::Map(function<U(T)> func) {
     BinaryTree<U> newTree;
     Sequence<T> *sequence = Traversal("КЛП");
-    for (int i = 0; i < sequence->GetLength(); i++) {
+    for (size_t i = 0; i < sequence->GetLength(); i++) {
         newTree.Add(func(sequence->Get(i)));
     }
     return newTree;
@@ -478,7 +548,7 @@ template <typename T>
 BinaryTree<T> BinaryTree<T>::Where(function<bool(T)> func) {
     BinaryTree<T> newTree;
     Sequence<T> *sequence = Traversal("КЛП");
-    for (int i = 0; i < sequence->GetLength(); i++) {
+    for (size_t i = 0; i < sequence->GetLength(); i++) {
         if (func(sequence->Get(i))) newTree.Add(sequence->Get(i));
     }
     return newTree;
@@ -487,7 +557,7 @@ BinaryTree<T> BinaryTree<T>::Where(function<bool(T)> func) {
 template <typename T>
 T BinaryTree<T>::Reduce(function<T(T, T)> func, T start) {
     Sequence<T> *sequence = Traversal("КЛП");
-    for (int i = 0; i < sequence->GetLength(); i++) {
+    for (size_t i = 0; i < sequence->GetLength(); i++) {
         start = func(start, sequence->Get(i));
     }
     return start;

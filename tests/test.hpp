@@ -123,9 +123,9 @@ void test_string(void) {
     string result1 = tree.SaveString("{K}(L)[P]");
     string result2 = tree.SaveString("(L)K[P]");
     string result3 = tree.SaveString("(L)[P]K");
-    string correct1 = "{ 10 }({ 5 }( null )[ null ])[{ 15 }( null )[ null ]]";
-    string correct2 = "(( null ) 5 [ null ]) 10 [( null ) 15 [ null ]]";
-    string correct3 = "(( null )[ null ] 5 )[( null )[ null ] 15 ] 10 ";
+    string correct1 = "{ 10.00 }({ 5.00 }( null )[ null ])[{ 15.00 }( null )[ null ]]";
+    string correct2 = "(( null ) 5.00 [ null ]) 10.00 [( null ) 15.00 [ null ]]";
+    string correct3 = "(( null )[ null ] 5.00 )[( null )[ null ] 15.00 ] 10.00 ";
     TEST_ASSERT_EQUAL_STRING(correct1.c_str(), result1.c_str());
     TEST_ASSERT_EQUAL_STRING(correct2.c_str(), result2.c_str());
     TEST_ASSERT_EQUAL_STRING(correct3.c_str(), result3.c_str());

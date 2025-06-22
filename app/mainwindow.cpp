@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 using namespace std;
-#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
