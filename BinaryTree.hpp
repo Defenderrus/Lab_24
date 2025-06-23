@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <functional>
+#include "Classes.hpp"
 #include "ICollectionTree.hpp"
 #include "EnumeratorTree.hpp"
 #include "sequences/ArraySequence.hpp"
@@ -50,7 +51,7 @@ class BinaryTree: public ICollectionTree<T>, public IEnumerableTree<T> {
         bool FindSubTree(Node<T> *tree, Node<T> *subtree);
         bool Equivalent(Node<T> *tree_1, Node<T> *tree_2);
         Node<T>* GetSubTree(Node<T> *node);
-        string Rounding(double number);
+        string Rounding(T number);
 
         // Функции для балансировки
         int GetHeight(Node<T> *node);
@@ -285,10 +286,8 @@ Node<T>* BinaryTree<T>::GetSubTree(Node<T> *node) {
 }
 
 template <typename T>
-string BinaryTree<T>::Rounding(double number) {
-    char buffer[20];
-    snprintf(buffer, sizeof(buffer), "%.2f", number);
-    return string(buffer);
+string BinaryTree<T>::Rounding(T number) {
+    return to_string(number);
 }
 
 // Функции для балансировки
@@ -616,6 +615,45 @@ void BinaryTree<T>::ReadString(string format, string line) {
         root = nullptr;
         throw;
     }
+}
+
+// Специализации
+template <>
+string BinaryTree<string>::parse(string token) {
+    return token;
+}
+
+template <>
+string BinaryTree<string>::Rounding(string data) {
+    return data;
+}
+
+template <>
+string BinaryTree<double>::Rounding(double number) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "%.2f", number);
+    return string(buffer);
+}
+
+template <>
+string BinaryTree<Complex>::Rounding(Complex number) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "%.2f,%.2f", number.real(), number.imag());
+    return string(buffer);
+}
+
+template <>
+string BinaryTree<Student>::Rounding(Student student) {
+    ostringstream oss;
+    oss << student.GetPersonId().series << "-" << student.GetPersonId().number;
+    return oss.str();
+}
+
+template <>
+string BinaryTree<Teacher>::Rounding(Teacher teacher) {
+    ostringstream oss;
+    oss << teacher.GetPersonId().series << "-" << teacher.GetPersonId().number;
+    return oss.str();
 }
 
 #endif // BINARYTREE_HPP

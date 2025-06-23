@@ -123,9 +123,9 @@ void test_string(void) {
     string result1 = tree.SaveString("{K}(L)[P]");
     string result2 = tree.SaveString("(L)K[P]");
     string result3 = tree.SaveString("(L)[P]K");
-    string correct1 = "{ 10.00 }({ 5.00 }( null )[ null ])[{ 15.00 }( null )[ null ]]";
-    string correct2 = "(( null ) 5.00 [ null ]) 10.00 [( null ) 15.00 [ null ]]";
-    string correct3 = "(( null )[ null ] 5.00 )[( null )[ null ] 15.00 ] 10.00 ";
+    string correct1 = "{ 10 }({ 5 }( null )[ null ])[{ 15 }( null )[ null ]]";
+    string correct2 = "(( null ) 5 [ null ]) 10 [( null ) 15 [ null ]]";
+    string correct3 = "(( null )[ null ] 5 )[( null )[ null ] 15 ] 10 ";
     TEST_ASSERT_EQUAL_STRING(correct1.c_str(), result1.c_str());
     TEST_ASSERT_EQUAL_STRING(correct2.c_str(), result2.c_str());
     TEST_ASSERT_EQUAL_STRING(correct3.c_str(), result3.c_str());
@@ -157,6 +157,40 @@ void test_string(void) {
     } catch (const exception &e) {cout << e.what() << endl;}
 }
 
+void test_classes(void) {
+    BinaryTree<Complex> complexTree;
+    complexTree.Add(Complex(1.0, 2.0));
+    complexTree.Add(Complex(3.5, -1.2));
+    complexTree.Add(Complex(0.0, 4.2));
+
+    Sequence<Complex> *sequence1 = complexTree.Traversal("ЛКП");
+    cout << "Первое комплексное число: " << sequence1->GetFirst() << endl;
+    cout << "Второе комплексное число: " << sequence1->Get(1) << endl;
+    cout << "Третье комплексное число: " << sequence1->GetLast() << endl;
+
+    BinaryTree<Student> studentTree;
+    time_t studentBirth = time(nullptr);
+    studentTree.Add(Student(PersonID(1111, 111111), "Иван", "Петрович", "Сидоров", studentBirth, 0001, "Б24-521", 4.5));
+    studentTree.Add(Student(PersonID(2222, 222222), "Николай", "Олегович", "Кузнецов", studentBirth, 0002, "Б24-521", 4.8));
+    studentTree.Add(Student(PersonID(3333, 333333), "Александр", "Сергеевич", "Смирнов", studentBirth, 0003, "Б24-521", 4.2));
+
+    Sequence<Student> *sequence2 = studentTree.Traversal("ЛКП");
+    cout << sequence2->GetFirst() << endl;
+    cout << sequence2->Get(1) << endl;
+    cout << sequence2->GetLast() << endl;
+    
+    BinaryTree<Teacher> teacherTree;
+    time_t teacherBirth = time(nullptr);
+    teacherTree.Add(Teacher(PersonID(4444, 444444), "Иван", "Петрович", "Сидоров", teacherBirth, "Математика", "Заведующий кафедры", 15));
+    teacherTree.Add(Teacher(PersonID(5555, 555555), "Николай", "Олегович", "Кузнецов", teacherBirth, "Информатика", "Преподаватель", 7));
+    teacherTree.Add(Teacher(PersonID(6666, 666666), "Александр", "Сергеевич", "Смирнов", teacherBirth, "Физика", "Преподаватель", 8));
+
+    Sequence<Teacher> *sequence3 = teacherTree.Traversal("ЛКП");
+    cout << sequence3->GetFirst() << endl;
+    cout << sequence3->Get(1) << endl;
+    cout << sequence3->GetLast() << endl;
+}
+
 int run_tests(void) {
     UNITY_BEGIN();
     RUN_TEST(test_base);
@@ -164,6 +198,7 @@ int run_tests(void) {
     RUN_TEST(test_concat);
     RUN_TEST(test_map_reduce_where);
     RUN_TEST(test_string);
+    RUN_TEST(test_classes);
     return UNITY_END();
 }
 
