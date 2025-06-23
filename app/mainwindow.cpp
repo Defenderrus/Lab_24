@@ -2,6 +2,85 @@
 #include "ui_mainwindow.h"
 using namespace std;
 
+PerformanceDialog::PerformanceDialog(QWidget *parent) : QDialog(parent) {
+    setWindowTitle("Производительность операций");
+    resize(1000, 600);
+
+    QVector<qreal> sizes = {1000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
+    QVector<qreal> addTimes = {0, 9, 47, 123, 907, 1844, 11787, 26675, 168082, 370576};
+    QVector<qreal> findTimes = {0, 3, 21, 54, 467, 990, 6732, 15069, 103629, 236121};
+    QVector<qreal> removeTimes = {0, 6, 39, 95, 657, 1568, 11037, 24878, 170309, 367859};
+    QVector<qreal> traversalTimes = {10, 665, 16277};
+    QVector<qreal> mapTimes = {12, 655, 18279};
+    QVector<qreal> whereTimes = {9, 652, 18115};
+    QVector<qreal> reduceTimes = {9, 649, 19458};
+    QLineSeries *addSeries = new QLineSeries();
+    addSeries->setName("Добавление");
+    QLineSeries *findSeries = new QLineSeries();
+    findSeries->setName("Поиск");
+    QLineSeries *removeSeries = new QLineSeries();
+    removeSeries->setName("Удаление");
+    QLineSeries *traversalSeries = new QLineSeries();
+    traversalSeries->setName("Обход");
+    QLineSeries *mapSeries = new QLineSeries();
+    mapSeries->setName("Map");
+    QLineSeries *whereSeries = new QLineSeries();
+    whereSeries->setName("Where");
+    QLineSeries *reduceSeries = new QLineSeries();
+    reduceSeries->setName("Reduce");
+
+    for (int i = 0; i < sizes.size(); ++i) {
+        addSeries->append(sizes[i], addTimes[i]);
+        findSeries->append(sizes[i], findTimes[i]);
+        removeSeries->append(sizes[i], removeTimes[i]);
+        if (i < traversalTimes.size()) {
+            traversalSeries->append(sizes[i], traversalTimes[i]);
+        }
+        if (i < mapTimes.size()) {
+            mapSeries->append(sizes[i], mapTimes[i]);
+        }
+        if (i < whereTimes.size()) {
+            whereSeries->append(sizes[i], whereTimes[i]);
+        }
+        if (i < reduceTimes.size()) {
+            reduceSeries->append(sizes[i], reduceTimes[i]);
+        }
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(addSeries);
+    chart->addSeries(findSeries);
+    chart->addSeries(removeSeries);
+    chart->addSeries(traversalSeries);
+    chart->addSeries(mapSeries);
+    chart->addSeries(whereSeries);
+    chart->addSeries(reduceSeries);
+    chart->setTitle("Производительность операций бинарного дерева");
+    chart->createDefaultAxes();
+    chart->axisX()->setTitleText("Количество элементов");
+    chart->axisY()->setTitleText("Время (мс)");
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+
+    QLogValueAxis *axisX = new QLogValueAxis();
+    axisX->setBase(10);
+    axisX->setLabelFormat("%g");
+    axisX->setTitleText("Количество элементов");
+    chart->setAxisX(axisX, addSeries);
+    chart->setAxisX(axisX, findSeries);
+    chart->setAxisX(axisX, removeSeries);
+    chart->setAxisX(axisX, traversalSeries);
+    chart->setAxisX(axisX, mapSeries);
+    chart->setAxisX(axisX, whereSeries);
+    chart->setAxisX(axisX, reduceSeries);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(chartView);
+    setLayout(layout);
+}
+
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -112,6 +191,10 @@ MainWindow::MainWindow(QWidget *parent):
     connect(ui->traverseButton, &QPushButton::clicked, this, &MainWindow::onTraverseClicked);
     connect(ui->serializeButton, &QPushButton::clicked, this, &MainWindow::onSerializeClicked);
     connect(ui->deserializeButton, &QPushButton::clicked, this, &MainWindow::onDeserializeClicked);
+    connect(ui->efficiencyButton, &QPushButton::clicked, this, [this]() {PerformanceDialog *dialog = new PerformanceDialog(this);
+                                                               dialog->setAttribute(Qt::WA_DeleteOnClose);
+                                                               dialog->show();
+    });
     drawTree();
 }
 

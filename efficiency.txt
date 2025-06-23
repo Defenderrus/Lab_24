@@ -1,0 +1,61 @@
+Testing with size: 1000
+Add 1000 elements: 0 ms
+Find in 1000 elements: 0 ms
+Remove from 1000 elements: 0 ms
+Traversal of 1000 elements: 10 ms
+Map for 1000 elements: 12 ms
+Where for 1000 elements: 9 ms
+Reduce for 1000 elements: 9 ms
+------------------------
+Testing with size: 10000
+Add 10000 elements: 9 ms
+Find in 10000 elements: 3 ms
+Remove from 10000 elements: 6 ms
+Traversal of 10000 elements: 665 ms
+Map for 10000 elements: 655 ms
+Where for 10000 elements: 652 ms
+Reduce for 10000 elements: 649 ms
+------------------------
+Testing with size: 50000
+Add 50000 elements: 47 ms
+Find in 50000 elements: 21 ms
+Remove from 50000 elements: 39 ms
+Traversal of 50000 elements: 16277 ms
+Map for 50000 elements: 18279 ms
+Where for 50000 elements: 18115 ms
+Reduce for 50000 elements: 19458 ms
+------------------------
+Testing with size: 100000
+Add 100000 elements: 123 ms
+Find in 100000 elements: 54 ms
+Remove from 100000 elements: 95 ms
+------------------------
+Testing with size: 500000
+Add 500000 elements: 907 ms
+Find in 500000 elements: 467 ms
+Remove from 500000 elements: 657 ms
+------------------------
+Testing with size: 1000000
+Add 1000000 elements: 1844 ms
+Find in 1000000 elements: 990 ms
+Remove from 1000000 elements: 1568 ms
+------------------------
+Testing with size: 5000000
+Add 5000000 elements: 11787 ms
+Find in 5000000 elements: 6732 ms
+Remove from 5000000 elements: 11037 ms
+------------------------
+Testing with size: 10000000
+Add 10000000 elements: 26675 ms
+Find in 10000000 elements: 15069 ms
+Remove from 10000000 elements: 24878 ms
+------------------------
+Testing with size: 50000000
+Add 50000000 elements: 168082 ms
+Find in 50000000 elements: 103629 ms
+------------------------
+Testing with size: 100000000
+Add 100000000 elements: 370576 ms
+Find in 100000000 elements: 236121 ms
+Remove from 100000000 elements: 367859 ms
+------------------------

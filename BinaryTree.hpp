@@ -220,13 +220,13 @@ Node<T>* BinaryTree<T>::Add(Node<T> *node, T value) {
     if (!node) return new Node<T>(value);
     else if (value < node->data) node->left = Add(node->left, value);
     else if (value > node->data) node->right = Add(node->right, value);
-    else throw invalid_argument("Такой элемент уже есть ("+Rounding(value)+")!");
+    else throw invalid_argument("Такой элемент уже есть ("+Rounding(value)+")!");  // return nullptr;
     return Balance(node);
 }
 
 template <typename T>
 Node<T>* BinaryTree<T>::Remove(Node<T> *node, T value) {
-    if (!node) throw out_of_range("Такого элемента нет ("+Rounding(value)+")!");
+    if (!node) throw out_of_range("Такого элемента нет ("+Rounding(value)+")!");  // return nullptr;
     else if (value < node->data) node->left = Remove(node->left, value);
     else if (value > node->data) node->right = Remove(node->right, value);
     else {

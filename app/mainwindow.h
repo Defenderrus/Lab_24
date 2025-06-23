@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QDialog>
+#include <QtCharts>
+#include <QChartView>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include "../BinaryTree.hpp"
@@ -12,6 +15,12 @@ using namespace std;
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainWindow;}
 QT_END_NAMESPACE
+
+class PerformanceDialog : public QDialog {
+    Q_OBJECT
+public:
+    explicit PerformanceDialog(QWidget *parent = nullptr);
+};
 
 class MainWindow: public QMainWindow
 {
